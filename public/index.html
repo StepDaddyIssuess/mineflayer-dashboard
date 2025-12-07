@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minecraft AFK Bot Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Minecraft AFK Bot Dashboard</h1>
+
+    <div id="bot-form">
+        <input type="text" id="host" placeholder="Server IP">
+        <input type="number" id="port" placeholder="Port (default 25565)">
+        <input type="text" id="username" placeholder="Username / Microsoft">
+        <button id="startBotBtn">Start Bot</button>
+    </div>
+
+    <div id="stored-accounts">
+        <h2>Stored Accounts</h2>
+        <div id="accountsList"></div>
+    </div>
+
+    <div id="logs">
+        <h2>Logs & Microsoft Login</h2>
+        <pre id="logOutput"></pre>
+    </div>
+
+    <div id="chat-section">
+        <h2>Chat</h2>
+        <div id="chatOutput"></div>
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <select id="botSelect"></select>
+        <button id="sendChatBtn">Send</button>
+    </div>
+
+    <!-- Popup Modal for Microsoft Login -->
+    <div id="overlay"></div>
+    <div id="loginModal">
+        <div>Microsoft Device Login</div>
+        <pre id="loginMessage"></pre>
+        <button onclick="copyCode()">Copy Code</button>
+        <button onclick="closeModal()">Close</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
