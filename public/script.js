@@ -11,6 +11,7 @@ const chatInput = document.getElementById('chatInput');
 const sendChatBtn = document.getElementById('sendChatBtn');
 const botSelect = document.getElementById('botSelect');
 const accountsListDiv = document.getElementById('accountsList');
+const runningBotsDiv = document.getElementById('runningBotsDiv');
 
 const loginModal = document.getElementById('loginModal');
 const loginMessage = document.getElementById('loginMessage');
@@ -31,9 +32,15 @@ socket.on('log', msg => {
 });
 
 // Display chat
-socket.on('chat', ({ bot, from, message }) => {
+socket.on('chat', ({ bot, from, message, time, rank, color }) => {
     const msgEl = document.createElement('div');
-    msgEl.textContent = `[${bot}] ${from}: ${message}`;
+
+    // Fallbacks if undefined
+    const displayTime = time || '';
+    const displayRank = rank || '';
+    const displayColor = color || '#ffffff';
+
+    msgEl.innerHTML = `<span style="color:${displayColor}">[${bot}]</span> <strong>${from}</strong> ${displayRank ? `(${displayRank})` : ''} ${displayTime ? `[${displayTime}]` : ''}: ${message}`;
     chatOutput.appendChild(msgEl);
     chatOutput.scrollTop = chatOutput.scrollHeight;
 });
@@ -73,7 +80,6 @@ chatInput.addEventListener('keypress', e => {
 // Update accounts list
 function updateAccountsList(accounts) {
     accountsListDiv.innerHTML = '';
-    botSelect.innerHTML = '';
     accounts.forEach(username => {
         const btn = document.createElement('button');
         btn.textContent = username;
@@ -84,14 +90,32 @@ function updateAccountsList(accounts) {
             socket.emit('startBot', { username, host, port });
         };
         accountsListDiv.appendChild(btn);
+    });
+}
 
-        // Add to chat select
+// Update running bots list
+socket.on('runningBots', bots => {
+    runningBotsDiv.innerHTML = '';
+    botSelect.innerHTML = '';
+    chatOutput.innerHTML = ''; // Clear chat when bots change
+
+    bots.forEach(username => {
+        const btn = document.createElement('button');
+        btn.textContent = `Stop ${username}`;
+        btn.className = 'account-btn';
+        btn.onclick = () => {
+            socket.emit('stopBot', username);
+            // Optional: clear chat for this bot immediately
+            chatOutput.innerHTML = '';
+        };
+        runningBotsDiv.appendChild(btn);
+
         const option = document.createElement('option');
         option.value = username;
         option.textContent = username;
         botSelect.appendChild(option);
     });
-}
+});
 
 // Receive accounts list
 socket.on('accountsList', updateAccountsList);
